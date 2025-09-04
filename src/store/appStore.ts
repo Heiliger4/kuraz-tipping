@@ -195,12 +195,12 @@ export const useAppStore = create<AppState>()(
           }, 2000)
         },
         
-        resetRating: () => set((state) => ({
+        resetRating: () => set({
           rating: {
             selectedRating: null,
             sent: false,
           }
-        })),
+        }),
         
         // Notification actions
         showNotification: (message, type, data = {}) => {
