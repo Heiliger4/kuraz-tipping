@@ -11,20 +11,23 @@ import { ModeToggle } from "./mode-toggle"
 import profileImage from "@/assets/k.png"
 import { HomeIcon, UserIcon } from "lucide-react"
 import { FloatingDock } from "./ui/floating-dock"
-import { useTipStore } from "@/store/tipStore";
-import { useRouteStore } from "@/store/routeStore";
+import { useAppStore } from "@/store/appStore";
+import { memo, useMemo } from "react"
 
-export default function Component() {
-    const dockItems = [
+const Component = memo(() => {
+    const dockItems = useMemo(() => [
         { title: "Home", icon: <HomeIcon size={20} />, href: "/" },
         { title: "Profile", icon: <UserIcon size={20} />, href: "/profile" },
-    ]
-    const { tip, setTip, isRandom } = useTipStore();
-    const { setRoute } = useRouteStore();
+    ], [])
+    
+    // Optimized selectors
+    const tip = useAppStore((state) => state.tip)
+    const setRoute = useAppStore((state) => state.setRoute)
+    const setFinalTip = useAppStore((state) => state.setFinalTip)
     
     const handleRandomTip = () => {
         const randomTip = Math.floor(Math.random() * (300 - 20 + 1)) + 20;
-        setTip(randomTip, true);
+        setFinalTip(randomTip, true);
     };
 
     const handleNavigation = (route: 'home' | 'profile') => {
@@ -112,11 +115,15 @@ export default function Component() {
                         variant="gradient"
                         size="sm"
                     >
-                        {isRandom && tip ? `${tip} ETB` : "Random Tip"}
+                        {tip.isRandom && tip.finalTip ? `${tip.finalTip} ETB` : "Random Tip"}
                     </Button>
                     <ModeToggle />
                 </div>
             </div>
         </header>
     )
-}
+})
+
+Component.displayName = 'Navbar'
+
+export default Component

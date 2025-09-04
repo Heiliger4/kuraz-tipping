@@ -3,42 +3,23 @@ import newImage from "@/assets/new.jpg";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState, useId, useRef } from "react"
-import { useTipStore } from "@/store/tipStore";
+import { useId, useRef, memo } from "react"
+import { useAppStore } from "@/store/appStore";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import confetti from "canvas-confetti"
-function ProfileTip() {
-    const { tip, setTip, resetRandom } = useTipStore();
+const ProfileTip = memo(() => {
+    // Optimized selectors - only subscribe to needed state slices
+    const tip = useAppStore((state) => state.tip)
+    const notification = useAppStore((state) => state.notification)
+    const setSelectedTip = useAppStore((state) => state.setSelectedTip)
+    const setCustomTip = useAppStore((state) => state.setCustomTip)
+    const submitTip = useAppStore((state) => state.submitTip)
 
     const id = useId();
-    const [selectedTip, setSelectedTip] = useState<string>("");
-    const [customTip, setCustomTip] = useState<string>("");
-    const [showMessage, setShowMessage] = useState(false);
-    const [tippedAmount, setTippedAmount] = useState<number | null>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     const handleTipButton = () => {
-        const latest = tip || (customTip ? parseInt(customTip) : (selectedTip ? parseInt(selectedTip) : null));
-        if (!latest) return;
-        
-        console.log("User tip amount:", latest);
-        setTip(latest, false);
-        setTippedAmount(latest);
-        setShowMessage(true);
-        
-        // 🎉 Confetti explosion from center
-        confetti({
-            particleCount: 150,
-            spread: 90,
-            origin: { x: 0.5, y: 0.5 },
-            colors: ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981']
-        });
-        
-        // Hide message after 3 seconds
-        setTimeout(() => {
-            setShowMessage(false);
-        }, 3000);
+        submitTip(buttonRef);
     };
 
     const items = [
@@ -80,12 +61,9 @@ function ProfileTip() {
                         Tip amount
                     </legend>
                     <RadioGroup className="grid grid-cols-3 gap-2"
-                        value={selectedTip}
+                        value={tip.selectedTip}
                         onValueChange={(val) => {
                             setSelectedTip(val);
-                            setCustomTip("");
-                            resetRandom();
-                            setTip(parseInt(val), false);
                         }}>
                         {items.map((item) => (
                             <label
@@ -110,13 +88,10 @@ function ProfileTip() {
                                 className="flex-1"
                                 placeholder="Tip me 𖹭"
                                 type="number"
-                                value={customTip}
+                                value={tip.customTip}
                                 onChange={(e) => {
                                     const value = e.target.value;
                                     setCustomTip(value);
-                                    setSelectedTip("");
-                                    resetRandom();
-                                    setTip(value ? parseInt(value) : null, false);
                                 }} />
                             <Button ref={buttonRef} variant="outline" onClick={handleTipButton} className="w-24 h-8">Tip</Button>
                         </div>
@@ -125,16 +100,18 @@ function ProfileTip() {
             </div>
             
             {/* Success Message */}
-            {showMessage && tippedAmount && (
+            {notification.show && notification.type === 'tip' && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
                     <div className="text-sm max-sm:px-3 max-sm:py-1.5 max-sm:text-xs bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white dark:bg-transparent dark:hover:bg-accent text-white px-8 py-4 rounded-lg shadow-lg animate-in zoom-in-50 duration-300">
-                        <p className="font-medium text-lg">You tipped {tippedAmount} ETB! 😎</p>
+                        <p className="font-medium text-lg">{notification.message}</p>
                     </div>
                 </div>
             )}
         </div>
 
     )
-}
+})
+
+ProfileTip.displayName = 'ProfileTip'
 
 export default ProfileTip
