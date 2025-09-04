@@ -1,17 +1,6 @@
-import {
-    CompassIcon,
-    FeatherIcon,
-    HeartIcon,
-    HouseIcon,
-    SearchIcon,
-} from "lucide-react"
-
+import { HeartIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList
 } from "@/components/ui/navigation-menu"
 import {
     Popover,
@@ -20,19 +9,18 @@ import {
 } from "@/components/ui/popover"
 import { ModeToggle } from "./mode-toggle"
 import profileImage from "@/assets/k.png"
-
-// Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [
-    { href: "#", label: "Dashboard", icon: HouseIcon },
-    { href: "#", label: "Explore", icon: CompassIcon },
-    { href: "#", label: "Write", icon: FeatherIcon },
-    { href: "#", label: "Search", icon: SearchIcon },
-]
+import { HomeIcon, UserIcon, SettingsIcon } from "lucide-react"
+import { FloatingDock } from "./ui/floating-dock"
 
 export default function Component() {
+    const dockItems = [
+        { title: "Home", icon: <HomeIcon size={20} />, href: "/" },
+        { title: "Profile", icon: <UserIcon size={20} />, href: "/profile" },
+        { title: "Settings", icon: <SettingsIcon size={20} />, href: "/settings" },
+    ]
     return (
         <header className="border-b px-4 md:px-6">
-            <div className="flex h-16 items-center justify-between gap-4">
+            <div className="flex h-24 items-center justify-between gap-4">
                 {/* Left side */}
                 <div className="flex flex-1 items-center gap-2">
                     {/* the logo */}
@@ -79,20 +67,15 @@ export default function Component() {
                         <PopoverContent align="start" className="w-48 p-1 md:hidden">
                             <NavigationMenu className="max-w-none *:w-full">
                                 <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-                                    {navigationLinks.map((link, index) => {
-                                        const Icon = link.icon
+                                    {dockItems.map((item, index) => {
                                         return (
                                             <NavigationMenuItem key={index} className="w-full">
                                                 <NavigationMenuLink
-                                                    href={link.href}
+                                                    href={item.href}
                                                     className="flex-row items-center gap-2 py-1.5"
                                                 >
-                                                    <Icon
-                                                        size={16}
-                                                        className="text-muted-foreground"
-                                                        aria-hidden="true"
-                                                    />
-                                                    <span>{link.label}</span>
+                                                    {item.icon}
+                                                    <span>{item.title}</span>
                                                 </NavigationMenuLink>
                                             </NavigationMenuItem>
                                         )
@@ -100,28 +83,15 @@ export default function Component() {
                                 </NavigationMenuList>
                             </NavigationMenu>
                         </PopoverContent>
+
                     </Popover>
                 </div>
                 {/* Middle area */}
-                <NavigationMenu className="max-md:hidden">
-                    <NavigationMenuList className="gap-2">
-                        {navigationLinks.map((link, index) => {
-                            const Icon = link.icon
-                            return (
-                                <NavigationMenuItem key={index}>
-                                    <NavigationMenuLink
-                                        href={link.href}
-                                        className="flex size-8 items-center justify-center p-1.5"
-                                        title={link.label}
-                                    >
-                                        <Icon aria-hidden="true" />
-                                        <span className="sr-only">{link.label}</span>
-                                    </NavigationMenuLink>
-                                </NavigationMenuItem>
-                            )
-                        })}
-                    </NavigationMenuList>
-                </NavigationMenu>
+                <FloatingDock
+                    items={dockItems}
+                    desktopClassName=""
+                    mobileClassName="max-md:sr-only"
+                />
                 {/* Right side */}
                 <div className="flex flex-1 items-center justify-end gap-4">
                     <Button size="sm" className="text-sm max-sm:aspect-square max-sm:p-0">
