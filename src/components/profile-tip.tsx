@@ -39,8 +39,8 @@ const ProfileTip = memo(() => {
                     className="w-[25rem] h-[20em]"
                 >
                     <div className="p-4 text-black dark:text-white flex flex-col items-center">
-                        <h3 className="text-xl font-bold mb-2">Welcome!</h3>
-                        <p className="mb-4 text-center">This is some description text.</p>
+                        <h3 className="text-xl font-bold mb-2">Abebe Kebede</h3>
+                        <p className="mb-4 text-center">Thanks a lot for letting me serve you today!</p>
 
                         {/* Big image container */}
                         <div className="w-[25rem] h-[15rem] pb-4 rounded-lg overflow-hidden">

@@ -13,6 +13,7 @@ import { HomeIcon, UserIcon } from "lucide-react"
 import { FloatingDock } from "./ui/floating-dock"
 import { useAppStore } from "@/store/appStore";
 import { memo, useMemo } from "react"
+import { useNavigate } from "react-router-dom"
 
 const Component = memo(() => {
     const dockItems = useMemo(() => [
@@ -22,8 +23,8 @@ const Component = memo(() => {
     
     // Optimized selectors
     const tip = useAppStore((state) => state.tip)
-    const setRoute = useAppStore((state) => state.setRoute)
     const setFinalTip = useAppStore((state) => state.setFinalTip)
+    const navigate = useNavigate()
     
     const handleRandomTip = () => {
         const randomTip = Math.floor(Math.random() * (300 - 20 + 1)) + 20;
@@ -31,7 +32,8 @@ const Component = memo(() => {
     };
 
     const handleNavigation = (route: 'home' | 'profile') => {
-        setRoute(route);
+        const path = route === 'home' ? '/' : '/profile';
+        navigate(path);
     };
 
     return (
