@@ -8,7 +8,7 @@ type Route = 'home' | 'profile'
 interface NotificationState {
   show: boolean
   message: string
-  type: 'tip' | 'rating'
+  type: 'tip' | 'rating' | 'shame'
   amount?: number | null
   rating?: string | null
 }
@@ -46,7 +46,7 @@ interface AppState {
   setCustomTip: (value: string) => void
   setFinalTip: (amount: number | null, isRandom?: boolean) => void
   resetTipRandom: () => void
-  submitTip: (buttonRef?: React.RefObject<HTMLButtonElement | null>) => void
+  submitTip: () => void
   
   // Rating actions
   setRating: (rating: string | null) => void
@@ -54,7 +54,7 @@ interface AppState {
   resetRating: () => void
   
   // Notification actions
-  showNotification: (message: string, type: 'tip' | 'rating', data?: { amount?: number | null, rating?: string | null }) => void
+  showNotification: (message: string, type: 'tip' | 'rating' | 'shame', data?: { amount?: number | null, rating?: string | null }) => void
   hideNotification: () => void
   
   // Confetti action
@@ -115,6 +115,8 @@ export const useAppStore = create<AppState>()(
         setFinalTip: (amount, isRandom = false) => set((state) => ({
           tip: {
             ...state.tip,
+            selectedTip: isRandom ? '' : state.tip.selectedTip,
+            customTip: isRandom ? '' : state.tip.customTip,
             finalTip: amount,
             isRandom,
           }
@@ -127,12 +129,18 @@ export const useAppStore = create<AppState>()(
           }
         })),
         
-        submitTip: (buttonRef) => {
+        submitTip: () => {
           const state = get()
           const { tip } = state
           const amount = tip.finalTip || (tip.customTip ? parseInt(tip.customTip) : (tip.selectedTip ? parseInt(tip.selectedTip) : null))
           
           if (!amount) return
+          
+          // Check if amount is below minimum
+          if (amount < 20) {
+            state.showNotification('🙄 Come on, don\'t be that person. 20 ETB minimum — show some class. 😗', 'shame')
+            return
+          }
           
           // Update tip state
           set((state) => ({

@@ -19,7 +19,7 @@ const ProfileTip = memo(() => {
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     const handleTipButton = () => {
-        submitTip(buttonRef);
+        submitTip();
     };
 
     const items = [
@@ -101,6 +101,15 @@ const ProfileTip = memo(() => {
             
             {/* Success Message */}
             {notification.show && notification.type === 'tip' && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+                    <div className="text-sm max-sm:px-3 max-sm:py-1.5 max-sm:text-xs bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white dark:bg-transparent dark:hover:bg-accent text-white px-8 py-4 rounded-lg shadow-lg animate-in zoom-in-50 duration-300">
+                        <p className="font-medium text-lg">{notification.message}</p>
+                    </div>
+                </div>
+            )}
+            
+            {/* Shame Message */}
+            {notification.show && notification.type === 'shame' && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
                     <div className="text-sm max-sm:px-3 max-sm:py-1.5 max-sm:text-xs bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white dark:bg-transparent dark:hover:bg-accent text-white px-8 py-4 rounded-lg shadow-lg animate-in zoom-in-50 duration-300">
                         <p className="font-medium text-lg">{notification.message}</p>
