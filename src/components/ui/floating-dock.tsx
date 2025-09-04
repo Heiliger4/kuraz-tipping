@@ -15,15 +15,17 @@ export const FloatingDock = ({
   items,
   desktopClassName,
   mobileClassName,
+  onItemClick,
 }: {
   items: { title: string; icon: React.ReactNode; href: string }[];
   desktopClassName?: string;
   mobileClassName?: string;
+  onItemClick?: (title: string) => void;
 }) => {
   return (
     <>
-      <FloatingDockDesktop items={items} className={desktopClassName} />
-      <FloatingDockMobile items={items} className={mobileClassName} />
+      <FloatingDockDesktop items={items} className={desktopClassName} onItemClick={onItemClick} />
+      <FloatingDockMobile items={items} className={mobileClassName} onItemClick={onItemClick} />
     </>
   );
 };
@@ -31,9 +33,11 @@ export const FloatingDock = ({
 const FloatingDockMobile = ({
   items,
   className,
+  onItemClick,
 }: {
   items: { title: string; icon: React.ReactNode; href: string }[];
   className?: string;
+  onItemClick?: (title: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
   return (
@@ -61,13 +65,13 @@ const FloatingDockMobile = ({
                 }}
                 transition={{ delay: (items.length - 1 - idx) * 0.05 }}
               >
-                <a
-                  href={item.href}
+                <button
+                  onClick={() => onItemClick?.(item.title)}
                   key={item.title}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
                 >
                   <div className="h-4 w-4">{item.icon}</div>
-                </a>
+                </button>
               </motion.div>
             ))}
           </motion.div>
@@ -86,9 +90,11 @@ const FloatingDockMobile = ({
 const FloatingDockDesktop = ({
   items,
   className,
+  onItemClick,
 }: {
   items: { title: string; icon: React.ReactNode; href: string }[];
   className?: string;
+  onItemClick?: (title: string) => void;
 }) => {
   let mouseX = useMotionValue(Infinity);
   return (
@@ -101,7 +107,7 @@ const FloatingDockDesktop = ({
       )}
     >
       {items.map((item) => (
-        <IconContainer mouseX={mouseX} key={item.title} {...item} />
+        <IconContainer mouseX={mouseX} key={item.title} {...item} onItemClick={onItemClick} />
       ))}
     </motion.div>
   );
@@ -112,11 +118,13 @@ function IconContainer({
   title,
   icon,
   href,
+  onItemClick,
 }: {
   mouseX: MotionValue;
   title: string;
   icon: React.ReactNode;
   href: string;
+  onItemClick?: (title: string) => void;
 }) {
   let ref = useRef<HTMLDivElement>(null);
 
@@ -161,7 +169,7 @@ function IconContainer({
   const [hovered, setHovered] = useState(false);
 
   return (
-    <a href={href}>
+    <button onClick={() => onItemClick?.(title)}>
       <motion.div
         ref={ref}
         style={{ width, height }}
@@ -188,6 +196,6 @@ function IconContainer({
           {icon}
         </motion.div>
       </motion.div>
-    </a>
+    </button>
   );
 }

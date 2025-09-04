@@ -1,6 +1,6 @@
-import { HeartIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList
+import {
+    NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList
 } from "@/components/ui/navigation-menu"
 import {
     Popover,
@@ -9,17 +9,30 @@ import {
 } from "@/components/ui/popover"
 import { ModeToggle } from "./mode-toggle"
 import profileImage from "@/assets/k.png"
-import { HomeIcon, UserIcon, SettingsIcon } from "lucide-react"
+import { HomeIcon, UserIcon } from "lucide-react"
 import { FloatingDock } from "./ui/floating-dock"
+import { useTipStore } from "@/store/tipStore";
+import { useRouteStore } from "@/store/routeStore";
 
 export default function Component() {
     const dockItems = [
         { title: "Home", icon: <HomeIcon size={20} />, href: "/" },
         { title: "Profile", icon: <UserIcon size={20} />, href: "/profile" },
-        { title: "Settings", icon: <SettingsIcon size={20} />, href: "/settings" },
     ]
+    const { tip, setTip, isRandom } = useTipStore();
+    const { setRoute } = useRouteStore();
+    
+    const handleRandomTip = () => {
+        const randomTip = Math.floor(Math.random() * (300 - 20 + 1)) + 20;
+        setTip(randomTip, true);
+    };
+
+    const handleNavigation = (route: 'home' | 'profile') => {
+        setRoute(route);
+    };
+
     return (
-        <header className="border-b px-4 md:px-6">
+        <header className=" px-4 md:px-6">
             <div className="flex h-24 items-center justify-between gap-4">
                 {/* Left side */}
                 <div className="flex flex-1 items-center gap-2">
@@ -33,7 +46,7 @@ export default function Component() {
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button
-                                className="group size-8 md:hidden"
+                                className="group size-8 sm:hidden"
                                 variant="ghost"
                                 size="icon"
                             >
@@ -71,8 +84,8 @@ export default function Component() {
                                         return (
                                             <NavigationMenuItem key={index} className="w-full">
                                                 <NavigationMenuLink
-                                                    href={item.href}
-                                                    className="flex-row items-center gap-2 py-1.5"
+                                                    onClick={() => handleNavigation(item.title.toLowerCase() as 'home' | 'profile')}
+                                                    className="flex-row items-center gap-2 py-1.5 cursor-pointer"
                                                 >
                                                     {item.icon}
                                                     <span>{item.title}</span>
@@ -83,7 +96,6 @@ export default function Component() {
                                 </NavigationMenuList>
                             </NavigationMenu>
                         </PopoverContent>
-
                     </Popover>
                 </div>
                 {/* Middle area */}
@@ -91,16 +103,16 @@ export default function Component() {
                     items={dockItems}
                     desktopClassName=""
                     mobileClassName="max-md:sr-only"
+                    onItemClick={(title) => handleNavigation(title.toLowerCase() as 'home' | 'profile')}
                 />
                 {/* Right side */}
                 <div className="flex flex-1 items-center justify-end gap-4">
-                    <Button size="sm" className="text-sm max-sm:aspect-square max-sm:p-0">
-                        <HeartIcon
-                            className="opacity-60 sm:-ms-1"
-                            size={16}
-                            aria-hidden="true"
-                        />
-                        <span className="max-sm:sr-only">Tip Me</span>
+                    <Button
+                        onClick={handleRandomTip}
+                        variant="gradient"
+                        size="sm"
+                    >
+                        {isRandom && tip ? `${tip} ETB` : "Random Tip"}
                     </Button>
                     <ModeToggle />
                 </div>
